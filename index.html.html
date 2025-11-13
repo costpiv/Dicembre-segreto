@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dicembre Segreto 🎄</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Font moderni -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --bg-card: rgba(15,23,42,0.92);
+      --border-soft: rgba(148,163,184,0.45);
+      --accent-gold: #fbbf24;
+      --accent-red: #f97373;
+      --accent-blue: #60a5fa;
+      --text-main: #f9fafb;
+      --text-soft: #cbd5f5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(248,113,113,0.25) 0, transparent 55%),
+        radial-gradient(circle at bottom right, rgba(59,130,246,0.25) 0, transparent 55%),
+        linear-gradient(135deg, #020617, #020617 40%, #020617);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 18px 16px 24px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* 🎄 Titolo in calligrafico Great Vibes */
+    h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.4rem;
+      font-weight: 400;
+      text-align: center;
+      margin: 12px 0 6px;
+      color: #fef3c7;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      z-index: 1;
+    }
+
+    p.subtitle {
+      font-size: 0.85rem;
+      text-align: center;
+      opacity: 0.9;
+      margin: 0 0 18px;
+      color: var(--text-soft);
+      z-index: 1;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(60px, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 420px;
+      z-index: 1;
+    }
+
+    .day {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      padding: 14px 0 10px;
+      text-align: center;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.18s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(15,23,42,0.9);
+    }
+
+    .day:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(15,23,42,0.95);
+      border-color: rgba(248,250,252,0.5);
+    }
+
+    .day.today {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 14px rgba(251,191,36,0.7);
+    }
+    .day.today::before {
+      content: "★";
+      position: absolute;
+      top: 5px;
+      right: 7px;
+      font-size: 0.7rem;
+      color: var(--accent-gold);
+    }
+
+    .day.locked {
+      opacity: 0.45;
+      border-style: dashed;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .footer {
+      margin-top: 16px;
+      font-size: 0.75rem;
+      opacity: 0.7;
+      text-align: center;
+      color: var(--text-soft);
+      z-index: 1;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.7);
+      padding: 18px 18px 16px;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 18px 40px rgba(15,23,42,0.95);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .modal-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .modal-pill {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.15);
+      border: 1px solid rgba(56,189,248,0.5);
+      color: #e0f2fe;
+    }
+
+    .modal-divider {
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(to right, transparent, rgba(148,163,184,0.7), transparent);
+      margin: 8px 0 10px;
+    }
+
+    .modal-message {
+      font-size: 0.95rem;
+      text-align: center;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .modal button {
+      width: 100%;
+      padding: 9px 0;
+      border: none;
+      border-radius: 999px;
+      background: var(--accent-gold);
+      font-weight: 600;
+      color: #111827;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(251,191,36,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+    }
+
+    /* ❄️ neve animata */
+    .snow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(2px 2px at 20px 20px, rgba(255,255,255,0.9) 50%, transparent 50%),
+        radial-gradient(2px 2px at 80px 40px, rgba(255,255,255,0.7) 50%, transparent 50%),
+        radial-gradient(3px 3px at 50px 10px, rgba(255,255,255,0.8) 50%, transparent 50%);
+      background-size: 200px 200px, 260px 260px, 320px 320px;
+      animation: snow 25s linear infinite;
+      opacity: 0.75;
+    }
+
+    @keyframes snow {
+      from { transform: translateY(-100px); }
+      to   { transform: translateY(300px); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="snow"></div>
+
+  <h1>🎄 Dicembre Segreto</h1>
+  <p class="subtitle">Ogni giorno, una piccola sorpresa da scoprire.</p>
+
+  <div class="calendar">
+
+    <!-- Giorni con messaggi e icone -->
+    <button class="day" data-day="1" data-message="🔎 Caccia al tesoro... scopri i 3 messaggi lasciati per casa">1</button>
+    <button class="day" data-day="2" data-message="⏸️ Mondo in pausa, solo io e te">2</button>
+    <button class="day" data-day="3" data-message="🍳 Rendez-vous segreto in cucina">3</button>
+    <button class="day" data-day="4" data-message="🛋️ Stasera sorpresa sul divano">4</button>
+    <button class="day" data-day="5" data-message="💥 Scateniamoci!">5</button>
+    <button class="day" data-day="6" data-message="🕯️ Operazione hygge: si parte">6</button>
+    <button class="day" data-day="7" data-message="🧭 Pronto? Oggi si esplora">7</button>
+    <button class="day" data-day="8" data-message="✨ Oggi si accende la magia">8</button>
+    <button class="day" data-day="9" data-message="💌 C’è un piccolo messaggio per te">9</button>
+    <button class="day" data-day="10" data-message="🎁 Mini-pensiero per te">10</button>
+    <button class="day" data-day="11" data-message="🎟️ Pesca un buono… sarai fortunato?">11</button>
+    <button class="day" data-day="12" data-message="🕹️ Mini gioco: pronto a un segreto?">12</button>
+    <button class="day" data-day="13" data-message="🧵 Handmade day">13</button>
+    <button class="day" data-day="14" data-message="📸 Missione foto">14</button>
+    <button class="day" data-day="15" data-message="🎄 Livello 15: trova il regalo">15</button>
+    <button class="day" data-day="16" data-message="💞 Respiri sincronizzati… pronto?">16</button>
+    <button class="day" data-day="17" data-message="🎧 Musica per le tue orecchie">17</button>
+    <button class="day" data-day="18" data-message="🏆 Hai vinto un premio. Apri.">18</button>
+    <button class="day" data-day="19" data-message="⏪ Pronto per un rewind?">19</button>
+    <button class="day" data-day="20" data-message="🥐 Colazione super in arrivo">20</button>
+    <button class="day" data-day="21" data-message="🧣 Oggi copriti bene!">21</button>
+    <button class="day" data-day="22" data-message="📬 C'è posta per te">22</button>
+    <button class="day" data-day="23" data-message="🚧 2026: in costruzione">23</button>
+    <button class="day" data-day="24" data-message="🛌 Pigiama-mode: ON">24</button>
+
+  </div>
+
+  <div class="footer">
+    Solo i giorni già arrivati si sbloccano. I futuri restano mistero. ✨
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-pill" id="modal-pill">Missione</div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-message" id="modal-message"></div>
+      <button id="close-modal">
+        🎁 Chiudi e torna al calendario
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll('.day');
+    const backdrop = document.getElementById('modal-backdrop');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalPill = document.getElementById('modal-pill');
+    const closeModalBtn = document.getElementById('close-modal');
+
+    const now = new Date();
+    const isDecember = now.getMonth() === 11; 
+    const todayDay = isDecember ? now.getDate() : 0;
+
+    buttons.forEach(btn => {
+      const day = parseInt(btn.getAttribute('data-day'), 10);
+
+      if (isDecember && day === todayDay) btn.classList.add('today');
+      if (!isDecember || day > todayDay) btn.classList.add('locked');
+    });
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const day = parseInt(btn.getAttribute('data-day'), 10);
+        const locked = btn.classList.contains('locked');
+
+        if (!isDecember) {
+          modalTitle.textContent = "Troppo presto 😏";
+          modalMessage.textContent = "Non è ancora dicembre… niente spoiler!";
+          modalPill.textContent = "Bloccato";
+        } 
+        else if (locked) {
+          modalTitle.textContent = "Bloccato 🔒";
+          modalMessage.textContent = `Questo giorno si sblocca il ${day} dicembre.`;
+          modalPill.textContent = "In arrivo";
+        } 
+        else {
+          modalTitle.textContent = `Giorno ${day}`;
+          modalMessage.textContent = btn.getAttribute('data-message');
+          modalPill.textContent = "Missione sbloccata";
+        }
+
+        backdrop.classList.add('active');
+      });
+    });
+
+    closeModalBtn.addEventListener('click', () => backdrop.classList.remove('active'));
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.classList.remove('active'); });
+  </script>
+</body>
+</html>
